@@ -55,3 +55,25 @@ button:hover {
   border-radius: 8px;
   min-height: 40px;
 }
+select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.links-box {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.links-box a {
+  color: #0a7;
+  text-decoration: none;
+}
+
+.links-box a:hover {
+  text-decoration: underline;
+}
