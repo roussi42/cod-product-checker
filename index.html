@@ -4,78 +4,82 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>COD Product Checker</title>
-  <link rel="stylesheet" href="style.css?v=2" />
+  <link rel="stylesheet" href="style.css?v=3" />
 </head>
 <body>
   <div class="container">
-    <h1>COD Product Checker</h1>
-    <p>أداة أولية لتقييم المنتج قبل إطلاقه في COD باستعمال إشارات حقيقية ومجانية.</p>
+    <header class="header">
+      <h1>COD Product Checker</h1>
+      <p>أداة مرتبة لعرض documents و chunks من Supabase بطريقة واضحة.</p>
+    </header>
 
-    <form id="productForm">
-      <label>اسم المنتج</label>
-      <input type="text" id="productName" placeholder="مثال: portable blender" />
+    <main>
+      <form id="productForm" class="form">
+        <label>اسم المنتج</label>
+        <input type="text" id="productName" placeholder="مثال: portable blender" />
 
-      <label>سعر الشراء</label>
-      <input type="number" id="buyPrice" placeholder="مثال: 5" />
+        <label>سعر الشراء</label>
+        <input type="number" id="buyPrice" placeholder="مثال: 5" />
 
-      <label>سعر البيع</label>
-      <input type="number" id="sellPrice" placeholder="مثال: 15" />
+        <label>سعر البيع</label>
+        <input type="number" id="sellPrice" placeholder="مثال: 15" />
 
-      <label>تكلفة الشحن</label>
-      <input type="number" id="shippingCost" placeholder="مثال: 3" />
+        <label>تكلفة الشحن</label>
+        <input type="number" id="shippingCost" placeholder="مثال: 3" />
 
-      <label>نسبة فشل التوصيل %</label>
-      <input type="number" id="failureRate" placeholder="مثال: 25" />
+        <label>نسبة فشل التوصيل %</label>
+        <input type="number" id="failureRate" placeholder="مثال: 25" />
 
-      <label>هل المنتج خفيف؟</label>
-      <select id="isLight">
-        <option value="yes">نعم</option>
-        <option value="no">لا</option>
-      </select>
+        <label>هل المنتج خفيف؟</label>
+        <select id="isLight">
+          <option value="yes">نعم</option>
+          <option value="no">لا</option>
+        </select>
 
-      <label>هل المنتج يحل مشكلة واضحة؟</label>
-      <select id="solvesProblem">
-        <option value="yes">نعم</option>
-        <option value="no">لا</option>
-      </select>
+        <label>هل المنتج يحل مشكلة واضحة؟</label>
+        <select id="solvesProblem">
+          <option value="yes">نعم</option>
+          <option value="no">لا</option>
+        </select>
 
-      <label>هل فيه wow factor؟</label>
-      <select id="wowFactor">
-        <option value="yes">نعم</option>
-        <option value="no">لا</option>
-      </select>
+        <label>هل فيه wow factor؟</label>
+        <select id="wowFactor">
+          <option value="yes">نعم</option>
+          <option value="no">لا</option>
+        </select>
 
-      <label>هل لقيت إعلانات في Meta Ad Library؟</label>
-      <select id="adLibrary">
-        <option value="yes">نعم</option>
-        <option value="no">لا</option>
-      </select>
+        <label>هل لقيت إعلانات في Meta Ad Library؟</label>
+        <select id="adLibrary">
+          <option value="yes">نعم</option>
+          <option value="no">لا</option>
+        </select>
 
-      <label>هل Google Trends يبين اهتمام؟</label>
-      <select id="googleTrends">
-        <option value="yes">نعم</option>
-        <option value="no">لا</option>
-      </select>
+        <label>هل Google Trends يبين اهتمام؟</label>
+        <select id="googleTrends">
+          <option value="yes">نعم</option>
+          <option value="no">لا</option>
+        </select>
 
-      <label>هل عندك دليل طلب من supplier page؟</label>
-      <select id="supplierProof">
-        <option value="yes">نعم</option>
-        <option value="no">لا</option>
-      </select>
+        <label>هل عندك دليل طلب من supplier page؟</label>
+        <select id="supplierProof">
+          <option value="yes">نعم</option>
+          <option value="no">لا</option>
+        </select>
 
-      <button type="submit">احسب</button>
-    </form>
+        <button type="submit">احسب</button>
+      </form>
 
-    <div class="links-box">
-      <p>مصادر مجانية:</p>
-      <a href="https://www.facebook.com/ads/library" target="_blank" rel="noopener noreferrer">Meta Ad Library</a>
-      <a href="https://trends.google.com/trends/" target="_blank" rel="noopener noreferrer">Google Trends</a>
-    </div>
+      <section class="links-box">
+        <p>مصادر مجانية:</p>
+        <a href="https://www.facebook.com/ads/library" target="_blank" rel="noopener noreferrer">Meta Ad Library</a>
+        <a href="https://trends.google.com/trends/" target="_blank" rel="noopener noreferrer">Google Trends</a>
+      </section>
 
-    <div id="result" class="result"></div>
+      <section id="result" class="result"></section>
+    </main>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=2"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>
