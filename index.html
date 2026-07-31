@@ -9,7 +9,7 @@
 <body>
   <div class="container">
     <h1>COD Product Checker</h1>
-    <p>أداة أولية لتقييم المنتج قبل إطلاقه في COD.</p>
+    <p>أداة أولية لتقييم المنتج قبل إطلاقه في COD باستعمال إشارات حقيقية ومجانية.</p>
 
     <form id="productForm">
       <label>اسم المنتج</label>
@@ -45,8 +45,32 @@
         <option value="no">لا</option>
       </select>
 
+      <label>هل لقيت إعلانات في Meta Ad Library؟</label>
+      <select id="adLibrary">
+        <option value="yes">نعم</option>
+        <option value="no">لا</option>
+      </select>
+
+      <label>هل Google Trends يبين اهتمام؟</label>
+      <select id="googleTrends">
+        <option value="yes">نعم</option>
+        <option value="no">لا</option>
+      </select>
+
+      <label>هل عندك دليل طلب من supplier page؟</label>
+      <select id="supplierProof">
+        <option value="yes">نعم</option>
+        <option value="no">لا</option>
+      </select>
+
       <button type="submit">احسب</button>
     </form>
+
+    <div class="links-box">
+      <p>مصادر مجانية:</p>
+      <a href="https://www.facebook.com/ads/library" target="_blank" rel="noopener noreferrer">Meta Ad Library</a>
+      <a href="https://trends.google.com/trends/" target="_blank" rel="noopener noreferrer">Google Trends</a>
+    </div>
 
     <div id="result" class="result"></div>
   </div>
@@ -54,4 +78,3 @@
   <script src="app.js"></script>
 </body>
 </html>
-  
