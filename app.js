@@ -7,43 +7,75 @@ const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const form = document.getElementById('productForm');
 const result = document.getElementById('result');
 
-async function loadDocuments() {
+function escapeHtml(value) {
+  if (value === null || value === undefined) return '';
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+async function loadData() {
   if (!result) return;
 
   result.innerHTML = '<p>جاري تحميل البيانات من Supabase...</p>';
 
-  const { data, error } = await client
+  const { data: documents, error: documentsError } = await client
     .from('documents')
-    .select('id, title, source_type, content_hash, created_at')
+    .select('id, title, source_url, source_type, raw_text')
     .order('id', { ascending: true });
 
-  if (error) {
-    result.innerHTML = `<p>خطأ في جلب documents: ${error.message}</p>`;
+  if (documentsError) {
+    result.innerHTML = `<p>خطأ في جلب documents: ${documentsError.message}</p>`;
     return;
   }
 
-  if (!data || data.length === 0) {
-    result.innerHTML = '<p>ما كاش documents في الجدول.</p>';
+  const { data: chunks, error: chunksError } = await client
+    .from('chunks')
+    .select('id, document_id, chunk_index, chunk_text, citation_label')
+    .order('id', { ascending: true });
+
+  if (chunksError) {
+    result.innerHTML = `<p>خطأ في جلب chunks: ${chunksError.message}</p>`;
     return;
   }
 
   result.innerHTML = `
-    <h3>Documents من Supabase</h3>
-    <ul>
-      ${data.map(doc => `
-        <li>
-          <strong>#${doc.id}</strong> - ${doc.title || 'بدون عنوان'} | ${doc.source_type || 'بدون نوع'}
-        </li>
-      `).join('')}
-    </ul>
+    <div style="text-align:right;">
+      <h3>Documents (${documents.length})</h3>
+      <ul>
+        ${documents.map(doc => `
+          <li style="margin-bottom:12px;">
+            <strong>#${doc.id}</strong> - ${escapeHtml(doc.title)}<br>
+            <small>${escapeHtml(doc.source_type)} | ${escapeHtml(doc.source_url)}</small><br>
+            <span>${escapeHtml((doc.raw_text || '').slice(0, 120))}</span>
+          </li>
+        `).join('')}
+      </ul>
+
+      <hr style="margin:20px 0;">
+
+      <h3>Chunks (${chunks.length})</h3>
+      <ul>
+        ${chunks.map(chunk => `
+          <li style="margin-bottom:12px;">
+            <strong>#${chunk.id}</strong> - doc ${chunk.document_id} | chunk ${chunk.chunk_index}<br>
+            <span>${escapeHtml(chunk.chunk_text)}</span><br>
+            <small>${escapeHtml(chunk.citation_label || '')}</small>
+          </li>
+        `).join('')}
+      </ul>
+    </div>
   `;
 }
 
 if (form) {
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    loadDocuments();
+    loadData();
   });
 }
 
-loadDocuments();
+loadData();
