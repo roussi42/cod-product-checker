@@ -6,64 +6,106 @@ const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const result = document.getElementById("result");
 
-async function loadData() {
-  result.innerHTML = `<p>جاري تحميل البيانات...</p>`;
-
-  const { data: documents, error: docsError } = await client
+async function loadDocuments() {
+  const { data, error } = await client
     .from('documents')
     .select('id, title, source_type, content_hash, created_at')
     .order('id', { ascending: true });
 
-  if (docsError) {
-    result.innerHTML = `<p>خطأ في جلب documents: ${docsError.message}</p>`;
-    return;
+  if (error) {
+    return `<p>خطأ في جلب documents: ${error.message}</p>`;
   }
 
-  const { data: chunks, error: chunksError } = await client
+  if (!data || data.length === 0) {
+    return `<p>ما كاش documents.</p>`;
+  }
+
+  return `
+    <h3>Documents</h3>
+    <ul>
+      ${data.map(doc => `
+        <li>
+          <strong>#${doc.id}</strong> - ${doc.title} | ${doc.source_type} | ${doc.content_hash}
+        </li>
+      `).join('')}
+    </ul>
+  `;
+}
+
+async function loadChunks(searchTerm = '') {
+  let query = client
     .from('chunks')
     .select('id, document_id, chunk_index, content, created_at')
     .order('document_id', { ascending: true })
     .order('chunk_index', { ascending: true });
 
-  if (chunksError) {
-    result.innerHTML = `<p>خطأ في جلب chunks: ${chunksError.message}</p>`;
-    return;
+  if (searchTerm.trim() !== '') {
+    query = query.ilike('content', `%${searchTerm}%`);
   }
 
-  const docsHtml = !documents || documents.length === 0
-    ? `<p>ما كاش documents.</p>`
-    : `
-      <h3>Documents</h3>
-      <ul>
-        ${documents.map(doc => `
-          <li>
-            <strong>#${doc.id}</strong> - ${doc.title} | ${doc.source_type} | ${doc.content_hash}
-          </li>
-        `).join('')}
-      </ul>
-    `;
+  const { data, error } = await query;
 
-  const chunksHtml = !chunks || chunks.length === 0
-    ? `<p>ما كاش chunks.</p>`
-    : `
-      <h3>Chunks</h3>
-      <ul>
-        ${chunks.map(chunk => `
-          <li>
-            <strong>#${chunk.id}</strong> - doc ${chunk.document_id} | chunk ${chunk.chunk_index}<br>
-            ${chunk.content}
-          </li>
-        `).join('')}
-      </ul>
-    `;
+  if (error) {
+    return `<p>خطأ في جلب chunks: ${error.message}</p>`;
+  }
+
+  if (!data || data.length === 0) {
+    return `<p>ما كاش chunks مطابقة.</p>`;
+  }
+
+  return `
+    <h3>Chunks</h3>
+    <ul>
+      ${data.map(chunk => `
+        <li style="margin-bottom: 12px;">
+          <strong>#${chunk.id}</strong> - doc ${chunk.document_id} | chunk ${chunk.chunk_index}<br>
+          ${chunk.content}
+        </li>
+      `).join('')}
+    </ul>
+  `;
+}
+
+async function renderPage(searchTerm = '') {
+  result.innerHTML = `<p>جاري تحميل البيانات...</p>`;
+
+  const docsHtml = await loadDocuments();
+  const chunksHtml = await loadChunks(searchTerm);
 
   result.innerHTML = `
+    <div style="margin-bottom: 20px;">
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="ابحث داخل chunks..."
+        value="${searchTerm}"
+        style="padding:10px; width:70%; max-width:400px;"
+      />
+      <button id="searchBtn" style="padding:10px;">بحث</button>
+      <button id="clearBtn" style="padding:10px;">مسح</button>
+    </div>
+
     <div>
       ${docsHtml}
       <hr>
       ${chunksHtml}
     </div>
   `;
+
+  document.getElementById('searchBtn').addEventListener('click', () => {
+    const value = document.getElementById('searchInput').value;
+    renderPage(value);
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    renderPage('');
+  });
+
+  document.getElementById('searchInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      renderPage(e.target.value);
+    }
+  });
 }
 
-loadData();
+renderPage();
