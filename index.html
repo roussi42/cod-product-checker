@@ -27,6 +27,24 @@
       <label>نسبة فشل التوصيل %</label>
       <input type="number" id="failureRate" placeholder="مثال: 25" />
 
+      <label>هل المنتج خفيف؟</label>
+      <select id="isLight">
+        <option value="yes">نعم</option>
+        <option value="no">لا</option>
+      </select>
+
+      <label>هل المنتج يحل مشكلة واضحة؟</label>
+      <select id="solvesProblem">
+        <option value="yes">نعم</option>
+        <option value="no">لا</option>
+      </select>
+
+      <label>هل فيه wow factor؟</label>
+      <select id="wowFactor">
+        <option value="yes">نعم</option>
+        <option value="no">لا</option>
+      </select>
+
       <button type="submit">احسب</button>
     </form>
 
@@ -36,3 +54,4 @@
   <script src="app.js"></script>
 </body>
 </html>
+  
