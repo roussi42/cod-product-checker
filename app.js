@@ -1,90 +1,39 @@
-const form = document.getElementById("productForm");
+const SUPABASE_URL = 'https://bmokrazyympqrglbyadq.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_7HzqPREmW08INEJ10uhO6Q_QAD9nVey';
+
+const { createClient } = supabase;
+const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 const result = document.getElementById("result");
 
-form.addEventListener("submit", function (e) {
-  e.preventDefault();
+async function loadDocuments() {
+  result.innerHTML = `<p>جاري تحميل البيانات...</p>`;
 
-  const productName = document.getElementById("productName").value;
-  const buyPrice = parseFloat(document.getElementById("buyPrice").value) || 0;
-  const sellPrice = parseFloat(document.getElementById("sellPrice").value) || 0;
-  const shippingCost = parseFloat(document.getElementById("shippingCost").value) || 0;
-  const failureRate = parseFloat(document.getElementById("failureRate").value) || 0;
+  const { data, error } = await client
+    .from('documents')
+    .select('id, title, source_type, content_hash, created_at')
+    .order('id', { ascending: true });
 
-  const isLight = document.getElementById("isLight").value;
-  const solvesProblem = document.getElementById("solvesProblem").value;
-  const wowFactor = document.getElementById("wowFactor").value;
-  const adLibrary = document.getElementById("adLibrary").value;
-  const googleTrends = document.getElementById("googleTrends").value;
-  const supplierProof = document.getElementById("supplierProof").value;
-
-  const expectedLoss = (failureRate / 100) * sellPrice;
-  const estimatedProfit = sellPrice - buyPrice - shippingCost - expectedLoss;
-
-  let score = 0;
-  let reasons = [];
-
-  if (estimatedProfit > 5) {
-    score += 25;
-    reasons.push("هامش الربح المبدئي جيد.");
-  } else if (estimatedProfit > 0) {
-    score += 10;
-    reasons.push("هامش الربح موجود لكنه متوسط.");
-  } else {
-    reasons.push("هامش الربح ضعيف بعد احتساب المخاطر.");
+  if (error) {
+    result.innerHTML = `<p>خطأ في جلب البيانات: ${error.message}</p>`;
+    return;
   }
 
-  if (isLight === "yes") {
-    score += 10;
-    reasons.push("المنتج خفيف، وهذا يساعد في الشحن.");
-  }
-
-  if (solvesProblem === "yes") {
-    score += 15;
-    reasons.push("المنتج يحل مشكلة واضحة.");
-  }
-
-  if (wowFactor === "yes") {
-    score += 10;
-    reasons.push("المنتج فيه wow factor.");
-  }
-
-  if (adLibrary === "yes") {
-    score += 15;
-    reasons.push("تم العثور على إعلانات في Meta Ad Library.");
-  } else {
-    reasons.push("لم يتم العثور على إعلانات واضحة في Meta Ad Library.");
-  }
-
-  if (googleTrends === "yes") {
-    score += 15;
-    reasons.push("يوجد اهتمام ظاهر في Google Trends.");
-  } else {
-    reasons.push("الاهتمام غير واضح في Google Trends.");
-  }
-
-  if (supplierProof === "yes") {
-    score += 10;
-    reasons.push("يوجد دليل طلب من صفحة المورد.");
-  } else {
-    reasons.push("لا يوجد دليل طلب واضح من المورد.");
-  }
-
-  let verdict = "";
-  if (score >= 70) {
-    verdict = "إشارات المنتج قوية مبدئيًا.";
-  } else if (score >= 40) {
-    verdict = "إشارات المنتج متوسطة وتحتاج تحقق إضافي.";
-  } else {
-    verdict = "إشارات المنتج ضعيفة مبدئيًا.";
+  if (!data || data.length === 0) {
+    result.innerHTML = `<p>ما كاش حتى document في الجدول.</p>`;
+    return;
   }
 
   result.innerHTML = `
-    <h3>النتيجة</h3>
-    <p><strong>المنتج:</strong> ${productName}</p>
-    <p><strong>الربح التقديري:</strong> ${estimatedProfit.toFixed(2)}</p>
-    <p><strong>السكور:</strong> ${score} / 100</p>
-    <p><strong>الحكم:</strong> ${verdict}</p>
-    <h4>أسباب النتيجة:</h4>
-    <ul>${reasons.map(reason => `<li>${reason}</li>`).join("")}</ul>
+    <h3>Documents من Supabase</h3>
+    <ul>
+      ${data.map(doc => `
+        <li>
+          <strong>#${doc.id}</strong> - ${doc.title} | ${doc.source_type} | ${doc.content_hash}
+        </li>
+      `).join('')}
+    </ul>
   `;
-});
+}
+
+loadDocuments();
