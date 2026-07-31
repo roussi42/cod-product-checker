@@ -4,10 +4,13 @@ const SUPABASE_ANON_KEY = 'sb_publishable_7HzqPREmW08INEJ10uhO6Q_QAD9nVey';
 const { createClient } = supabase;
 const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const result = document.getElementById("result");
+const form = document.getElementById('productForm');
+const result = document.getElementById('result');
 
 async function loadDocuments() {
-  result.innerHTML = '<p>جاري تحميل البيانات...</p>';
+  if (!result) return;
+
+  result.innerHTML = '<p>جاري تحميل البيانات من Supabase...</p>';
 
   const { data, error } = await client
     .from('documents')
@@ -15,25 +18,32 @@ async function loadDocuments() {
     .order('id', { ascending: true });
 
   if (error) {
-    result.innerHTML = `<p>خطأ: ${error.message}</p>`;
+    result.innerHTML = `<p>خطأ في جلب documents: ${error.message}</p>`;
     return;
   }
 
   if (!data || data.length === 0) {
-    result.innerHTML = '<p>ما كاش documents.</p>';
+    result.innerHTML = '<p>ما كاش documents في الجدول.</p>';
     return;
   }
 
   result.innerHTML = `
-    <h3>Documents</h3>
+    <h3>Documents من Supabase</h3>
     <ul>
       ${data.map(doc => `
         <li>
-          <strong>#${doc.id}</strong> - ${doc.title} | ${doc.source_type}
+          <strong>#${doc.id}</strong> - ${doc.title || 'بدون عنوان'} | ${doc.source_type || 'بدون نوع'}
         </li>
       `).join('')}
     </ul>
   `;
+}
+
+if (form) {
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    loadDocuments();
+  });
 }
 
 loadDocuments();
